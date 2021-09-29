@@ -1,0 +1,26 @@
+CREATE TABLE users (
+    -- convert everything to small case
+    id VARCHAR UNIQUE NOT NULL PRIMARY KEY, 
+    email VARCHAR UNIQUE NOT NULL, 
+    full_name TEXT NOT NULL,
+    plan SMALLINT DEFAULT 1,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE apps(
+    id VARCHAR UNIQUE NOT NULL PRIMARY KEY,
+    user_id VARCHAR NOT NULL REFERENCES users(id),
+    app_name TEXT NOT NULL,
+    description TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE responses(
+    id VARCHAR UNIQUE NOT NULL PRIMARY KEY,
+    app_id VARCHAR NOT NULL REFERENCES apps(id),
+    response TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
