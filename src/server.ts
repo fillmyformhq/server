@@ -27,6 +27,10 @@ app.get("/", (req: Request, res: Response) => {
 	return res.json("Hello there you user!!");
 });
 
+import userRoutes from "./components/users/users.routes";
+
+app.use("/api/v1/auth", userRoutes);
+
 import configSettings from "./config/config";
 const PORT: number = configSettings.PORT;
 app.listen(PORT, () => console.log(`server is running ${PORT}`));

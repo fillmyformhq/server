@@ -13,6 +13,7 @@ CREATE TABLE apps(
     user_id VARCHAR NOT NULL REFERENCES users(id),
     app_name TEXT NOT NULL,
     description TEXT NOT NULL,
+		active BOOLEAN DEFAULT TRUE;
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

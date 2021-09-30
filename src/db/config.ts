@@ -1,7 +1,7 @@
-import knex from "knex";
+import knex, { Knex } from "knex";
 import configSettings from "../config/config";
 
-const db = knex({
+const db: Knex = knex({
 	client: "pg",
 	version: "12.5",
 	connection: {

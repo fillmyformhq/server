@@ -16,7 +16,7 @@ const config: IConfig =
 				JWT_SECRET: "fhjghldjghjfasdfadskf34343432433432",
 				DB_HOST: "fillmyform-dev.cm0hbjphferi.ap-south-1.rds.amazonaws.com",
 				DB_USER: "postgres",
-				DB_PASSWORD: "KRISHNa7373",
+				DB_PASSWORD: "KRISHna7373",
 				DB_NAME: "postgres",
 		  }
 		: {
