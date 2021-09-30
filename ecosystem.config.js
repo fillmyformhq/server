@@ -3,7 +3,7 @@ module.exports = {
 		{
 			name: "fillmyform-server-prod",
 			script: "npx",
-			args: "serve -s dist -l 8080 -n",
+			args: "start",
 			interpreter: "none",
 			env: {
 				NODE_ENV: "production",
