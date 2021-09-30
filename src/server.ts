@@ -39,7 +39,7 @@ app.use("/api/v1/app", appRoutes);
 app.use("/api/v1/response", responseRoutes);
 
 /*
- * @additionConfig
+ * @additionalConfig
  */
 
 import configSettings from "./config/config";
