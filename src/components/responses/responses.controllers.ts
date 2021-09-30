@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import find from "../../helpers/find.helpers";
 import insertOne from "../../helpers/insertOne.helpers";
-import updateOne from "../../helpers/updateOne.helpers";
 import { IResponse } from "../../types/IResponse";
 import createNanoId from "../../utils/createNanoId";
 import responseHandler from "../../utils/responseHandler";

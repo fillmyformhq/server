@@ -7,9 +7,10 @@ import helmet from "helmet";
 
 const app: Application = express();
 
-/**
+/*
  * @middlewares
  */
+
 app.use(cors());
 app.use(helmet());
 app.use(express.urlencoded({ extended: true }));
@@ -21,18 +22,25 @@ app.use(
 	)
 );
 
-/**
+/*
  * @routes
  */
+
 app.get("/", (req: Request, res: Response) => {
 	return res.json("Hello there you user!!");
 });
 
 import userRoutes from "./components/users/users.routes";
 import appRoutes from "./components/apps/apps.routes";
+import responseRoutes from "./components/responses/responses.routes";
 
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/app", appRoutes);
+app.use("/api/v1/response", responseRoutes);
+
+/*
+ * @additionConfig
+ */
 
 import configSettings from "./config/config";
 const PORT: number = configSettings.PORT;
