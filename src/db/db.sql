@@ -1,27 +1,64 @@
-CREATE TABLE users (
-    -- convert everything to small case
-    id VARCHAR UNIQUE NOT NULL PRIMARY KEY, 
-    email VARCHAR UNIQUE NOT NULL, 
-    full_name TEXT NOT NULL,
-    plan SMALLINT DEFAULT 1,
+CREATE TABLE tiers(
+    id VARCHAR UNIQUE NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    responses_per_hour SMALLINT NOT NULL,
+    responses_per_month SMALLINT NOT NULL,
+    price SMALLINT NOT NULL,
+    is_csv_allowed BOOLEAN NOT NULL,
+    is_email_allowed BOOLEAN NOT NULL,
+    is_deleted BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+
+CREATE TABLE users(
+    id VARCHAR NOT NULL UNIQUE PRIMARY KEY,
+    email VARCHAR NOT NULL UNIQUE,
+    full_name TEXT NOT NULL,
+    tier_expires_at TIMESTAMPTZ DEFAULT NULL,
+    is_deleted BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+		last_login_time TIMESTAMPTZ DEFAULT NULL
+);
+
 CREATE TABLE apps(
-    id VARCHAR UNIQUE NOT NULL PRIMARY KEY,
-    user_id VARCHAR NOT NULL REFERENCES users(id),
-    app_name TEXT NOT NULL,
+    id VARCHAR NOT NULL UNIQUE PRIMARY KEY,
+    name TEXT NOT NULL,
+    created_by VARCHAR NOT NULL REFERENCES users(id),
     description TEXT NOT NULL,
-		active BOOLEAN DEFAULT TRUE;
+    website TEXT NOT NULL,
+    is_deleted BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE payments(
+    id VARCHAR UNIQUE NOT NULL PRIMARY KEY,
+    response TEXT NOT NULL,
+    is_payment_successful BOOLEAN NOT NULL,
+    is_deleted BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE user_plans(
+    id VARCHAR NOT NULL UNIQUE PRIMARY KEY,
+    user_id VARCHAR NOT NULL REFERENCES users(id),
+    tier_id VARCHAR NOT NULL REFERENCES tiers(id),
+    payment_details VARCHAR REFERENCES payments(id) DEFAULT NULL,
+    is_deleted BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE responses(
-    id VARCHAR UNIQUE NOT NULL PRIMARY KEY,
-    app_id VARCHAR NOT NULL REFERENCES apps(id),
+    id VARCHAR NOT NULL UNIQUE PRIMARY KEY,
+    user_id VARCHAR NOT NULL REFERENCES users(id),
     response TEXT NOT NULL,
+    is_deleted BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+		ip_address VARCHAR NOT NULL
 );
