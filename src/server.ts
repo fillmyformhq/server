@@ -2,6 +2,7 @@ import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import logger from "morgan";
 import helmet from "helmet";
+import slowDown from "express-slow-down";
 import checkOrigin from "./middlewares/checkOrigin.middlewares";
 import ipRequestLimiter from "./middlewares/ipRequestLimiter.middlewares";
 
@@ -11,6 +12,12 @@ const app: Application = express();
  * @middlewares
  */
 
+const speedLimiter = slowDown({
+	windowMs: 15 * 60 * 1000, // 15 minutes
+	delayAfter: 100, // allow 100 requests per 15 minutes, then...
+	delayMs: 500, // begin adding 500ms of delay per request above 100
+});
+app.use(speedLimiter);
 app.use(ipRequestLimiter);
 app.use(cors());
 app.use(helmet());
