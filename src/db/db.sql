@@ -1,16 +1,3 @@
-CREATE TABLE tiers(
-    id VARCHAR UNIQUE NOT NULL PRIMARY KEY,
-    name TEXT NOT NULL,
-    responses_per_hour SMALLINT NOT NULL,
-    responses_per_month SMALLINT NOT NULL,
-    price SMALLINT NOT NULL,
-    is_csv_allowed BOOLEAN NOT NULL,
-    is_email_allowed BOOLEAN NOT NULL,
-    is_deleted BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
 CREATE TABLE users(
     id VARCHAR NOT NULL UNIQUE PRIMARY KEY,
     email VARCHAR NOT NULL UNIQUE,
@@ -44,7 +31,7 @@ CREATE TABLE payments(
 CREATE TABLE user_plans(
     id VARCHAR NOT NULL UNIQUE PRIMARY KEY,
     user_id VARCHAR NOT NULL REFERENCES users(id),
-    tier_id VARCHAR NOT NULL REFERENCES tiers(id),
+    tier_id VARCHAR NOT NULL,
     payment_id VARCHAR REFERENCES payments(id) DEFAULT NULL,
     is_deleted BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -58,5 +45,5 @@ CREATE TABLE responses(
     is_deleted BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-		ip_address VARCHAR NOT NULL
+    ip_address VARCHAR NOT NULL
 );
