@@ -1,14 +1,14 @@
 import { IResponse } from "../types/IResponse";
 
-interface ResponseParams {
+interface InputParams {
 	statusCode: string;
 	functionName: string | null;
 	message: string | null;
-	data: any;
+	data: object | null;
 	uniqueCode: string;
 }
 
-const responseHandler = (responseParamObj: ResponseParams): IResponse => {
+const responseHandler = (responseParamObj: InputParams): IResponse => {
 	const obj1 = {
 		uniqueCode: responseParamObj.uniqueCode,
 		functionName: responseParamObj.functionName,

@@ -6,9 +6,10 @@ const insertOne = async (dbType: string, objectToInsert: object) => {
 			.insert(objectToInsert)
 			.returning("*");
 
-		if (!insertedObj) return { type: "errror", data: null };
+		if (!insertedObj) return { type: "error", data: null };
 		return { type: "success", data: insertedObj };
 	} catch (err) {
+		console.log(err);
 		return { type: "error", data: null };
 	}
 };

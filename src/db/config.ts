@@ -3,7 +3,7 @@ import configSettings from "../config/config";
 
 const db: Knex = knex({
 	client: "pg",
-	version: "12.5",
+	version: "13.4",
 	connection: {
 		host: configSettings.DB_HOST,
 		user: configSettings.DB_USER,

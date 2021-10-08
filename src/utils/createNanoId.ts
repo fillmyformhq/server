@@ -4,10 +4,10 @@ async function createNanoId(): Promise<string> {
 	const alphabet: string =
 		"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-	const lengthOfId: number = 10;
+	const lengthOfId: number = 12;
 
 	const nanoid = customAlphabet(alphabet, lengthOfId);
-	let id: string = await nanoid();
+	const id: string = await nanoid();
 
 	return id;
 }

@@ -11,11 +11,11 @@ const updateOne = async (
 			.where(conditionObject)
 			.returning("*");
 
-		if (!updatedObject) return { type: "error" };
+		if (!updatedObject) return { type: "error", data: null };
 
 		return { type: "success", data: updatedObject };
 	} catch (err) {
-		return { type: "error" };
+		return { type: "error", data: null };
 	}
 };
 

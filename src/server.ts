@@ -14,7 +14,7 @@ const app: Application = express();
 app.use(cors());
 app.use(helmet());
 app.use(express.urlencoded({ extended: true }));
-// app.use(express.json());
+app.use(express.json());
 app.enable("trust proxy"); //To log IP Address of the requests
 app.use(
 	logger(
@@ -33,10 +33,12 @@ app.get("/", (req: Request, res: Response) => {
 import userRoutes from "./components/users/users.routes";
 import appRoutes from "./components/apps/apps.routes";
 import responseRoutes from "./components/responses/responses.routes";
+import planRoutes from "./components/plans/plans.routes";
 
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/app", appRoutes);
 app.use("/api/v1/response", responseRoutes);
+app.use("/api/v1/plan", planRoutes);
 
 /*
  * @additionalConfig
