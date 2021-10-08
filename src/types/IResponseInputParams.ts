@@ -1,4 +1,4 @@
-export interface InputParams {
+export interface IResponseInputParams {
 	statusCode: string;
 	functionName: string | null;
 	message: string | null;

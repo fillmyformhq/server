@@ -3,6 +3,7 @@ import cors from "cors";
 import logger from "morgan";
 import helmet from "helmet";
 import checkOrigin from "./middlewares/checkOrigin.middlewares";
+import ipRequestLimiter from "./middlewares/ipRequestLimiter.middlewares";
 
 const app: Application = express();
 
@@ -10,6 +11,7 @@ const app: Application = express();
  * @middlewares
  */
 
+app.use(ipRequestLimiter);
 app.use(cors());
 app.use(helmet());
 app.use(express.urlencoded({ extended: true }));

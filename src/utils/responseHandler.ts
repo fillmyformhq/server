@@ -1,7 +1,7 @@
 import { IResponse } from "../types/IResponse";
-import { InputParams } from "../types/IResponseInputParams";
+import { IResponseInputParams } from "../types/IResponseInputParams";
 
-const responseHandler = (responseParamObj: InputParams): IResponse => {
+const responseHandler = (responseParamObj: IResponseInputParams): IResponse => {
 	const obj1 = {
 		uniqueCode: responseParamObj.uniqueCode,
 		functionName: responseParamObj.functionName,
@@ -55,6 +55,11 @@ const generateResponse = (statusCode: string) => {
 			return {
 				status: 500,
 				serverMessage: "Internal server error!",
+			};
+		case "SERVICE_UNAVAILABLE":
+			return {
+				status: 503,
+				serverMessage: "Service Unavailable!",
 			};
 		default:
 			return {
