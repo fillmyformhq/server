@@ -24,6 +24,7 @@ CREATE TABLE apps(
 CREATE TABLE payments(
     id VARCHAR UNIQUE NOT NULL PRIMARY KEY,
     response TEXT NOT NULL,
+		user_id VARCHAR NOT NULL REFERENCES users(id),
     is_payment_successful BOOLEAN NOT NULL,
     is_deleted BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),

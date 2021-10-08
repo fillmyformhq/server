@@ -12,6 +12,7 @@ interface IConfig {
 	DB_NAME: string;
 	REDIS_HOST: string;
 	REDIS_PORT: number;
+	ENVIRONMENT: string;
 }
 
 const configSettings: IConfig =
@@ -25,6 +26,7 @@ const configSettings: IConfig =
 				DB_NAME: "postgres",
 				REDIS_HOST: "127.0.0.1",
 				REDIS_PORT: 6379,
+				ENVIRONMENT: "development",
 		  }
 		: {
 				PORT: parseInt(process.env.PORT ? process.env.PORT : "8080"),
@@ -38,6 +40,7 @@ const configSettings: IConfig =
 				DB_NAME: "postgres",
 				REDIS_HOST: process.env.REDIS_HOST || "127.0.0.1",
 				REDIS_PORT: parseInt(process.env.PORT ? process.env.PORT : "6379"),
+				ENVIRONMENT: "production",
 		  };
 
 export default configSettings;

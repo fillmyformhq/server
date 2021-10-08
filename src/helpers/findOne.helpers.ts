@@ -1,6 +1,10 @@
 import db from "../config/postgresConfig";
+import { IHelperResponse } from "../types/IHelperResponse";
 
-const findOne = async (dbType: string, findObjectQuery: object) => {
+const findOne = async (
+	dbType: string,
+	findObjectQuery: object
+): Promise<IHelperResponse> => {
 	try {
 		const foundObjects = await db(dbType)
 			.where(findObjectQuery)
@@ -8,12 +12,10 @@ const findOne = async (dbType: string, findObjectQuery: object) => {
 			.returning("*");
 
 		if (foundObjects) {
-			if (foundObjects.length === 1) {
-				return { type: "success", data: foundObjects[0] };
-			} else if (foundObjects.length === 0) {
-				return { type: "success", data: null };
-			} else {
+			if (foundObjects.length === 0) {
 				return { type: "error", data: null };
+			} else {
+				return { type: "success", data: foundObjects[0] };
 			}
 		} else return { type: "error", data: null };
 	} catch (err) {

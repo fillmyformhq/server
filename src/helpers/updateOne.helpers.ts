@@ -1,10 +1,11 @@
 import db from "../config/postgresConfig";
+import { IHelperResponse } from "../types/IHelperResponse";
 
 const updateOne = async (
 	dbType: string,
 	conditionObject: object,
 	toUpdateObject: object
-) => {
+): Promise<IHelperResponse> => {
 	try {
 		const [updatedObject] = await db(dbType)
 			.update(toUpdateObject)
