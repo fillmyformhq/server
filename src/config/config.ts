@@ -1,3 +1,6 @@
+import { config } from "dotenv";
+config();
+
 const environment: string = process.env.NODE_ENV || "development";
 
 interface IConfig {
@@ -11,7 +14,7 @@ interface IConfig {
 	REDIS_PORT: number;
 }
 
-const config: IConfig =
+const configSettings: IConfig =
 	environment === "development"
 		? {
 				PORT: 8080,
@@ -37,4 +40,4 @@ const config: IConfig =
 				REDIS_PORT: parseInt(process.env.PORT ? process.env.PORT : "6379"),
 		  };
 
-export default config;
+export default configSettings;

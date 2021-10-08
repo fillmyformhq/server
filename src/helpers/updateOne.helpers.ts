@@ -1,4 +1,4 @@
-import db from "../db/config";
+import db from "../config/postgresConfig";
 
 const updateOne = async (
 	dbType: string,

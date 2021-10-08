@@ -1,4 +1,4 @@
-import db from "../db/config";
+import db from "../config/postgresConfig";
 
 const findOne = async (dbType: string, findObjectQuery: object) => {
 	try {

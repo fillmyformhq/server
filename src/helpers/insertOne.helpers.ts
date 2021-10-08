@@ -1,4 +1,4 @@
-import db from "../db/config";
+import db from "../config/postgresConfig";
 
 const insertOne = async (dbType: string, objectToInsert: object) => {
 	try {

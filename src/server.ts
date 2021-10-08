@@ -1,9 +1,8 @@
-import { config } from "dotenv";
-config();
 import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import logger from "morgan";
 import helmet from "helmet";
+import checkOrigin from "./middlewares/checkOrigin.middlewares";
 
 const app: Application = express();
 
@@ -35,10 +34,10 @@ import appRoutes from "./components/apps/apps.routes";
 import responseRoutes from "./components/responses/responses.routes";
 import planRoutes from "./components/plans/plans.routes";
 
-app.use("/api/v1/user", userRoutes);
-app.use("/api/v1/app", appRoutes);
+app.use("/api/v1/user", [checkOrigin, userRoutes]);
+app.use("/api/v1/app", [checkOrigin, appRoutes]);
 app.use("/api/v1/response", responseRoutes);
-app.use("/api/v1/plan", planRoutes);
+app.use("/api/v1/plan", [checkOrigin, planRoutes]);
 
 /*
  * @additionalConfig

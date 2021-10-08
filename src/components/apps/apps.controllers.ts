@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";	
+import { Request, Response, NextFunction } from "express";
 import findOne from "../../helpers/findOne.helpers";
 import insertOne from "../../helpers/insertOne.helpers";
 import updateOne from "../../helpers/updateOne.helpers";

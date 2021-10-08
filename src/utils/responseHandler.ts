@@ -1,12 +1,5 @@
 import { IResponse } from "../types/IResponse";
-
-interface InputParams {
-	statusCode: string;
-	functionName: string | null;
-	message: string | null;
-	data: object | null;
-	uniqueCode: string;
-}
+import { InputParams } from "../types/IResponseInputParams";
 
 const responseHandler = (responseParamObj: InputParams): IResponse => {
 	const obj1 = {

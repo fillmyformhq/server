@@ -2,28 +2,28 @@
 	{
 		"type": "free",
 		"id": "uHtRPNMNU4Gw",
-		"responses_per_hour": 10,
-		"responses_per_month": 100,
+		"responsesPerHour": 20,
+		"responsesPerMonth": 100,
 		"price": 0,
-		"is_csv_allowed": false,
-		"is_email_allowed": false
+		"isCsvAllowed": false,
+		"isEmailAllowed": false
 	},
 	{
 		"type": "basic",
 		"id": "oYGYWVIIgSNT",
-		"responses_per_hour": 50,
-		"responses_per_month": 300,
+		"responsesPerHour": 150,
+		"responsesPerMonth": 600,
 		"price": 10,
-		"is_csv_allowed": true,
-		"is_email_allowed": false
+		"isCsvAllowed": true,
+		"isEmailAllowed": false
 	},
 	{
 		"type": "pro",
 		"id": "LfUhxXzO6ZtF",
-		"responses_per_hour": -1,
-		"responses_per_month": -1,
+		"responsesPerHour": -1,
+		"responsesPerMonth": -1,
 		"price": 25,
-		"is_csv_allowed": true,
-		"is_email_allowed": true
+		"isCsvAllowed": true,
+		"isEmailAllowed": true
 	}
 ]

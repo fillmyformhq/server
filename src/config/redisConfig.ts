@@ -1,5 +1,5 @@
-import redis from "redis";
-import config from "../config/config";
+import redis, { RedisClient } from "redis";
+import config from "./config";
 
 interface IOptions {
 	host: string;
@@ -11,7 +11,7 @@ const options: IOptions = {
 	port: config.REDIS_PORT,
 };
 
-const redisClient = redis.createClient(options);
+const redisClient: RedisClient = redis.createClient(options);
 
 redisClient.on("connect", () => {
 	console.log("redis client connected");

@@ -1,4 +1,4 @@
-import db from "../db/config";
+import db from "../config/postgresConfig";
 
 const find = async (dbType: string, findObjectQuery: object) => {
 	try {
@@ -6,7 +6,7 @@ const find = async (dbType: string, findObjectQuery: object) => {
 			.where(findObjectQuery)
 			.orderBy("created_at", "desc")
 			.returning("*");
-			
+
 		if (foundObjects) {
 			if (foundObjects.length === 0) {
 				return { type: "error", data: "no_objects" };
