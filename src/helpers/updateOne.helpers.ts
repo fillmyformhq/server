@@ -12,11 +12,16 @@ const updateOne = async (
 			.where(conditionObject)
 			.returning("*");
 
-		if (!updatedObject) return { type: "error", data: null };
+		if (!updatedObject)
+			return { type: "error", data: null, uniqueCode: "server_error_0" };
 
-		return { type: "success", data: updatedObject };
+		return {
+			type: "success",
+			data: updatedObject,
+			uniqueCode: "update_success",
+		};
 	} catch (err) {
-		return { type: "error", data: null };
+		return { type: "error", data: null, uniqueCode: "server_error_1" };
 	}
 };
 

@@ -12,10 +12,14 @@ const find = async (
 			.returning("*");
 
 		if (foundObjects) {
-			return { type: "success", data: foundObjects };
-		} else return { type: "error", data: null };
+			return {
+				type: "success",
+				data: foundObjects,
+				uniqueCode: "found_many_success",
+			};
+		} else return { type: "error", data: null, uniqueCode: "server_error_0" };
 	} catch (err) {
-		return { type: "error", data: null };
+		return { type: "error", data: null, uniqueCode: "server_error_0" };
 	}
 };
 
