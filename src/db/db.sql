@@ -51,3 +51,12 @@ CREATE TABLE responses(
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     ip_address VARCHAR NOT NULL
 );
+
+CREATE TABLE user_settings(
+    id VARCHAR NOT NULL UNIQUE PRIMARY KEY,
+    user_id VARCHAR UNIQUE NOT NULL REFERENCES users(id),
+    allow_email_responses BOOLEAN DEFAULT FALSE,
+    is_deleted BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
