@@ -4,6 +4,7 @@ import { IResponse } from "../types/IResponse";
 import responseHandler from "../utils/responseHandler";
 import config from "../config/config";
 import findOne from "../helpers/findOne.helpers";
+import { IHelperResponse } from "../types/IHelperResponse";
 
 const unauthResponseHandler = (): IResponse => {
 	const errorResponse: IResponse = responseHandler({
@@ -20,12 +21,14 @@ const unauthResponseHandler = (): IResponse => {
 async function verifyToken(req: Request, res: Response, next: NextFunction) {
 	const JWT_SECRET: string = config.JWT_SECRET;
 
-	const authorization: string | undefined | null = req.headers.authorization;
-
-	if (!authorization) {
+	if (!req.cookies["AuthToken"]) {
 		const errorResponse: IResponse = unauthResponseHandler();
 		return res.status(errorResponse.status).json({ response: errorResponse });
 	}
+
+	const authorization: string = req.cookies["AuthToken"];
+
+	console.log(authorization);
 
 	const token = authorization.replace("Bearer ", "");
 	if (!token) {
@@ -39,11 +42,24 @@ async function verifyToken(req: Request, res: Response, next: NextFunction) {
 			return res.status(errorResponse.status).json({ response: errorResponse });
 		} else {
 			const userId = payload.userData.id;
-			const fetchedUser: { type: string; data: any } = await findOne("users", {
+			const fetchedUser: IHelperResponse = await findOne("users", {
 				id: userId,
 			});
-			if (fetchedUser.type === "success" && fetchedUser.data !== null) {
+			if (fetchedUser.type === "success") {
+				if (fetchedUser.uniqueCode === "no_item") {
+					const errorResponse: IResponse = unauthResponseHandler();
+					return res
+						.status(errorResponse.status)
+						.json({ response: errorResponse });
+				}
+
 				res.locals.user = fetchedUser.data;
+				if (!res.locals.user) {
+					const errorResponse: IResponse = unauthResponseHandler();
+					return res
+						.status(errorResponse.status)
+						.json({ response: errorResponse });
+				}
 				next();
 			} else {
 				const errorResponse: IResponse = unauthResponseHandler();

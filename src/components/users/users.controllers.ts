@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import createUserPlan from "../../helpers/createUserPlan.helpers";
 import findOne from "../../helpers/findOne.helpers";
 import insertOne from "../../helpers/insertOne.helpers";
+import { IHelperResponse } from "../../types/IHelperResponse";
 import { IResponse } from "../../types/IResponse";
 import createNanoId from "../../utils/createNanoId";
 import responseHandler from "../../utils/responseHandler";
@@ -12,13 +13,17 @@ const createNewUser = async (
 	res: Response,
 	data: { fullName: string; email: string }
 ) => {
+	/**
+	 * Create a row in users table
+	 * Create a row in user_plans table
+	 * Create a row in user_settings table
+	 */
+
 	const userToSave = {
 		id: await createNanoId(),
 		full_name: data.fullName,
 		email: data.email,
 	};
-
-	console.log(userToSave);
 
 	const saveUser = await insertOne("users", userToSave);
 	if (saveUser.type === "error") {
@@ -34,9 +39,9 @@ const createNewUser = async (
 		const userId: string = saveUser.data.id;
 
 		const newUserPlan = await createUserPlan({
-			user_id: userId,
-			tier_type: "free",
-			payment_id: null,
+			userId: userId,
+			tierType: "free",
+			paymentId: null,
 		});
 
 		if (newUserPlan.type === "error") {
@@ -46,6 +51,23 @@ const createNewUser = async (
 				functionName: "loginUser",
 				message: null,
 				uniqueCode: "create_new_user_plan_server_error",
+			});
+			return res.status(errorObject.status).json({ response: errorObject });
+		}
+
+		const userSettings = {
+			id: await createNanoId(),
+			user_id: userId,
+		};
+
+		const saveUserSettings = await insertOne("user_settings", userSettings);
+		if (saveUserSettings.type === "error") {
+			const errorObject = responseHandler({
+				statusCode: "INTERNAL_SERVER_ERROR",
+				data: { type: "error" },
+				functionName: "loginUser",
+				message: null,
+				uniqueCode: "insert_new_user_settings_server_error",
 			});
 			return res.status(errorObject.status).json({ response: errorObject });
 		}
@@ -63,6 +85,11 @@ const createNewUser = async (
 };
 
 const loginUser = async (req: Request, res: Response, next: NextFunction) => {
+	/**
+	 * Check if user exists
+	 * Call the function to createNewUser
+	 */
+
 	let { fullName, email } = req.body;
 
 	if (!fullName || !email) {
@@ -91,11 +118,11 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
 		return res.status(errorObject.status).json({ response: errorObject });
 	}
 
-	const findSavedUser: { type: string; data: any } = await findOne("users", {
+	const findSavedUser: IHelperResponse = await findOne("users", {
 		email: email,
 	});
 	if (findSavedUser.type === "success") {
-		if (findSavedUser.data === null)
+		if (findSavedUser.uniqueCode === "no_item")
 			return await createNewUser(req, res, { fullName, email });
 
 		const userId: string = findSavedUser.data.id;
@@ -121,17 +148,6 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 const getUser = async (req: Request, res: Response, next: NextFunction) => {
-	if (!res.locals.user) {
-		const errorResponse: IResponse = responseHandler({
-			statusCode: "UNAUTHORIZED",
-			data: { type: "error" },
-			functionName: "getUser",
-			message: "Not authorized!",
-			uniqueCode: "err_not_authorized",
-		});
-		return res.status(errorResponse.status).json({ response: errorResponse });
-	}
-
 	const user = res.locals.user;
 
 	const messageResponse: IResponse = responseHandler({

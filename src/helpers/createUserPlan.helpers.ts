@@ -1,13 +1,22 @@
 import { IUserPlan } from "../types/IUserPlan";
 import createNanoId from "../utils/createNanoId";
 import insertOne from "./insertOne.helpers";
-import tiers from "../utils/tiers.json";
 import updateOne from "./updateOne.helpers";
+import { getTierId } from "../utils/getTierInfo";
+import { IHelperResponse } from "../types/IHelperResponse";
+
+/**
+ * Create a new row in user_plans table
+ * Update the plan expiry date in users table
+ */
 
 /**
  * * Updates plan expiration date in user table
  */
-const updateUserPlanDate = async (userId: string, planType: string) => {
+const updateUserPlanDate = async (
+	userId: string,
+	planType: string
+): Promise<IHelperResponse> => {
 	const updatedUser = await updateOne(
 		"users",
 		{ id: userId },
@@ -22,19 +31,27 @@ const updateUserPlanDate = async (userId: string, planType: string) => {
 	return updatedUser;
 };
 
-const createUserPlan = async (data: IUserPlan) => {
-	const tierType: string = tiers.filter((i) => i.type === data.tier_type)[0].id;
+const createUserPlan = async (data: IUserPlan): Promise<IHelperResponse> => {
+	let tierId = getTierId(data.tierType);
+
+	if (!tierId) {
+		return {
+			type: "error",
+			data: null,
+			uniqueCode: "invalid_tier_type",
+		};
+	}
 
 	let planData = {
-		user_id: data.user_id,
 		id: await createNanoId(),
-		tier_id: tierType,
-		payment_id: data.payment_id,
+		user_id: data.userId,
+		tier_id: tierId,
+		payment_id: data.paymentId,
 	};
 
 	const userPlan = await insertOne("user_plans", planData);
 	if (userPlan.type === "success") {
-		const updatedUser = await updateUserPlanDate(data.user_id, data.tier_type);
+		const updatedUser = await updateUserPlanDate(data.userId, data.tierType);
 		return updatedUser;
 	} else {
 		return userPlan;

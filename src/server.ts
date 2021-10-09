@@ -3,6 +3,7 @@ import cors from "cors";
 import logger from "morgan";
 import helmet from "helmet";
 import slowDown from "express-slow-down";
+import cookieParser from "cookie-parser";
 import checkOrigin from "./middlewares/checkOrigin.middlewares";
 import ipRequestLimiter from "./middlewares/ipRequestLimiter.middlewares";
 
@@ -20,6 +21,7 @@ const speedLimiter = slowDown({
 
 app.use(speedLimiter);
 app.use(cors());
+app.use(cookieParser());
 app.use(helmet());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());

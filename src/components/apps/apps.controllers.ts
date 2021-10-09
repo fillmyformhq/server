@@ -118,17 +118,6 @@ const createApp = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 const updateApp = async (req: Request, res: Response, next: NextFunction) => {
-	if (!res.locals.user) {
-		const errorResponse: IResponse = responseHandler({
-			statusCode: "UNAUTHORIZED",
-			data: { type: "error" },
-			functionName: "updateApp",
-			message: "Not authorized!",
-			uniqueCode: "err_not_authorized",
-		});
-		return res.status(errorResponse.status).json({ response: errorResponse });
-	}
-
 	const userId: string = res.locals.user.id;
 	const { appName, description, website } = req.body;
 

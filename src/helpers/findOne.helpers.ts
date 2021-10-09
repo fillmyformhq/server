@@ -13,13 +13,17 @@ const findOne = async (
 
 		if (foundObjects) {
 			if (foundObjects.length === 0) {
-				return { type: "error", data: null };
+				return { type: "success", data: null, uniqueCode: "no_item" };
 			} else {
-				return { type: "success", data: foundObjects[0] };
+				return {
+					type: "success",
+					data: foundObjects[0],
+					uniqueCode: "found_item",
+				};
 			}
-		} else return { type: "error", data: null };
+		} else return { type: "error", data: null, uniqueCode: "server_error_0" };
 	} catch (err) {
-		return { type: "error", data: null };
+		return { type: "error", data: null, uniqueCode: "server_error_1" };
 	}
 };
 
