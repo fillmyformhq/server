@@ -5,6 +5,7 @@ import insertOne from "../../helpers/insertOne.helpers";
 import { IHelperResponse } from "../../types/IHelperResponse";
 import { IResponse } from "../../types/IResponse";
 import createNanoId from "../../utils/createNanoId";
+import renameObjectKeys from "../../utils/objectKeysRenamer";
 import responseHandler from "../../utils/responseHandler";
 import signJwt from "../../utils/signJwt";
 
@@ -152,7 +153,7 @@ const getUser = async (req: Request, res: Response, next: NextFunction) => {
 
 	const messageResponse: IResponse = responseHandler({
 		statusCode: "SUCCESS",
-		data: { type: "success", data: user },
+		data: { type: "success", data: renameObjectKeys([user])[0] },
 		functionName: "getUser",
 		message: null,
 		uniqueCode: "user_authorized",

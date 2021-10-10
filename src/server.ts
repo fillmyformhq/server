@@ -44,11 +44,17 @@ import userRoutes from "./components/users/users.routes";
 import appRoutes from "./components/apps/apps.routes";
 import responseRoutes from "./components/responses/responses.routes";
 import planRoutes from "./components/plans/plans.routes";
+import featureRoutes from "./components/features/features.routes";
 
 app.use("/api/v1/user", [checkOrigin, ipRequestLimiter(60, 20), userRoutes]);
 app.use("/api/v1/app", [checkOrigin, ipRequestLimiter(60, 20), appRoutes]);
 app.use("/api/v1/response", responseRoutes);
 app.use("/api/v1/plan", [ipRequestLimiter(60, 20), planRoutes]);
+app.use(
+	"/api/v1/feature",
+	[checkOrigin, ipRequestLimiter(60, 20)],
+	featureRoutes
+);
 
 /*
  * @additionalConfig

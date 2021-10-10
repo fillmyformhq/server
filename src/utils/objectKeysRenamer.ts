@@ -24,20 +24,25 @@ function hasKey<O>(obj: O, key: PropertyKey): key is keyof O {
 	return key in obj;
 }
 
-function renameObjectKeys(objectToConvert: object) {
-	let newObj: any = {};
-	for (let key in objectToConvert) {
-		let newKey: string = convertToCamelCase(key);
+// Takes an array of objects and returns an array
+function renameObjectKeys(objectsToConvert: Array<object>): Array<object> {
+	let convertedObjects = objectsToConvert.map((objectToConvert: object) => {
+		let newObj: any = {};
+		for (let key in objectToConvert) {
+			let newKey: string = convertToCamelCase(key);
 
-		let keyValue;
+			let keyValue;
 
-		if (hasKey(objectToConvert, key)) {
-			keyValue = objectToConvert[key];
+			if (hasKey(objectToConvert, key)) {
+				keyValue = objectToConvert[key];
+			}
+
+			newObj[newKey] = keyValue;
 		}
+		return newObj;
+	});
 
-		newObj[newKey] = keyValue;
-	}
-	return newObj;
+	return convertedObjects;
 }
 
 export default renameObjectKeys;

@@ -11,7 +11,7 @@ CREATE TABLE users(
 CREATE TABLE apps(
     id VARCHAR NOT NULL UNIQUE PRIMARY KEY,
     name TEXT NOT NULL,
-    created_by VARCHAR NOT NULL UNIQUE REFERENCES users(id),
+    user_id VARCHAR NOT NULL UNIQUE REFERENCES users(id),
     description TEXT NOT NULL,
     website TEXT NOT NULL,
     is_deleted BOOLEAN DEFAULT FALSE,

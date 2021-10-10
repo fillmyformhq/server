@@ -4,13 +4,14 @@ import insertOne from "../../helpers/insertOne.helpers";
 import { IHelperResponse } from "../../types/IHelperResponse";
 import { IResponse } from "../../types/IResponse";
 import createNanoId from "../../utils/createNanoId";
+import renameObjectKeys from "../../utils/objectKeysRenamer";
 import responseHandler from "../../utils/responseHandler";
 
 const getApp = async (req: Request, res: Response, next: NextFunction) => {
 	const userId: string = res.locals.user.id;
 
 	const fetchedApp: IHelperResponse = await findOne("apps", {
-		created_by: userId,
+		user_id: userId,
 	});
 	if (fetchedApp.type === "error") {
 		const errorObject = responseHandler({
@@ -34,7 +35,7 @@ const getApp = async (req: Request, res: Response, next: NextFunction) => {
 		} else {
 			const messageObject = responseHandler({
 				statusCode: "SUCCESS",
-				data: { type: "success", data: fetchedApp.data },
+				data: { type: "success", data: renameObjectKeys([fetchedApp.data])[0] },
 				functionName: "getApp",
 				message: null,
 				uniqueCode: "app_fetched_success",
@@ -46,7 +47,7 @@ const getApp = async (req: Request, res: Response, next: NextFunction) => {
 
 const createApp = async (req: Request, res: Response, next: NextFunction) => {
 	const userId: string = res.locals.user.id;
-	const { appName, description, website } = req.body;
+	let { appName, description, website } = req.body;
 	const appId = await createNanoId();
 
 	let appNameRegex: RegExp = /^[A-Za-z0-9]+$/;
@@ -55,6 +56,10 @@ const createApp = async (req: Request, res: Response, next: NextFunction) => {
 		!website ||
 		!appName ||
 		!description ||
+		!website.trim() ||
+		!appName.trim() ||
+		!description.trim() ||
+		appName.length > 16 ||
 		description.split(" ").length > 16 ||
 		!appNameRegex.test(appName)
 	) {
@@ -68,12 +73,28 @@ const createApp = async (req: Request, res: Response, next: NextFunction) => {
 		return res.status(errorObject.status).json({ response: errorObject });
 	}
 
+	let partsOfUrl = website.split(".");
+	if (
+		partsOfUrl.length < 2 ||
+		partsOfUrl[0].includes("www") ||
+		partsOfUrl[0].includes("http")
+	) {
+		const errorObject: IResponse = responseHandler({
+			statusCode: "UNPROCESSABLE",
+			data: { type: "error" },
+			functionName: "createApp",
+			message: "website url invalid",
+			uniqueCode: "create_app_website_not_valid",
+		});
+		return res.status(errorObject.status).json({ response: errorObject });
+	}
+
 	const appData = {
 		id: appId,
-		name: appName,
-		description,
-		website,
-		created_by: userId,
+		name: appName.trim(),
+		description: description.trim(),
+		website: website.toLowerCase().trim(),
+		user_id: userId,
 	};
 	const createdApp: IHelperResponse = await insertOne("apps", appData);
 	if (createdApp.type === "error") {
@@ -88,7 +109,7 @@ const createApp = async (req: Request, res: Response, next: NextFunction) => {
 	} else {
 		const messageObject = responseHandler({
 			statusCode: "CREATED",
-			data: { type: "success", data: createdApp },
+			data: { type: "success", data: renameObjectKeys([createdApp.data])[0] },
 			functionName: "createApp",
 			message: null,
 			uniqueCode: "app_created",

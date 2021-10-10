@@ -26,22 +26,14 @@ async function verifyToken(req: Request, res: Response, next: NextFunction) {
 		return res.status(errorResponse.status).json({ response: errorResponse });
 	}
 
-	const authorization: string = req.cookies["AuthToken"];
-
-	console.log(authorization);
-
-	const token = authorization.replace("Bearer ", "");
-	if (!token) {
-		const errorResponse: IResponse = unauthResponseHandler();
-		return res.status(errorResponse.status).json({ response: errorResponse });
-	}
+	const token: string = req.cookies["AuthToken"];
 
 	jwt.verify(token, JWT_SECRET, async (err: any, payload: any) => {
 		if (err) {
 			const errorResponse: IResponse = unauthResponseHandler();
 			return res.status(errorResponse.status).json({ response: errorResponse });
 		} else {
-			const userId = payload.userData.id;
+			const userId = payload.id;
 			const fetchedUser: IHelperResponse = await findOne("users", {
 				id: userId,
 			});
