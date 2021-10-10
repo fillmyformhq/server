@@ -31,25 +31,52 @@ const ipRequestLimiter = (
 			return res.status(response.status).json(response);
 		}
 
-		const requests: any = redis.incr(ip);
+		let requests: number;
 
-		if (requests === 1) {
-			redis.expire(ip, secondsWindow);
-		}
+		redis.incr(ip, (err, val) => {
+			if (err) {
+				const responseObject: IResponseInputParams = {
+					statusCode: "INTERNAL_SERVER_ERROR",
+					functionName: null,
+					message: null,
+					data: null,
+					uniqueCode: "redis_incr_error",
+				};
+				const errorObject: IResponse = responseHandler(responseObject);
+				return res.status(errorObject.status).json(errorObject);
+			}
+			requests = val;
 
-		if (requests > hitsAllowed) {
-			const responseObject: IResponseInputParams = {
-				statusCode: "SERVICE_UNAVAILABLE",
-				functionName: null,
-				message: "Too many requests",
-				data: null,
-				uniqueCode: "IP_REQUESTS_EXCEEDED",
-			};
-			const errorObject: IResponse = responseHandler(responseObject);
-			return res.status(errorObject.status).json(errorObject);
-		} else {
-			next();
-		}
+			if (!requests) {
+				const responseObject: IResponseInputParams = {
+					statusCode: "INTERNAL_SERVER_ERROR",
+					functionName: null,
+					message: null,
+					data: null,
+					uniqueCode: "redis_incr_error",
+				};
+				const errorObject: IResponse = responseHandler(responseObject);
+				return res.status(errorObject.status).json(errorObject);
+			}
+
+			if (requests === 1) {
+				redis.expire(ip, secondsWindow);
+			}
+
+			if (requests > hitsAllowed) {
+				const responseObject: IResponseInputParams = {
+					statusCode: "SERVICE_UNAVAILABLE",
+					functionName: null,
+					message: "Too many requests",
+					data: null,
+					uniqueCode: "IP_REQUESTS_EXCEEDED",
+				};
+				const errorObject: IResponse = responseHandler(responseObject);
+				return res.status(errorObject.status).json(errorObject);
+			} else {
+				next();
+			}
+		});
 	};
 };
 

@@ -24,7 +24,7 @@ const getUserPlanInfo = async (
 
 	const fetchedUserPlan: { type: string; data: any } = await find(
 		"user_plans",
-		{ user_id: userId }
+		{ userId: userId }
 	);
 	if (fetchedUserPlan.type === "error") {
 		const errorObject = responseHandler({
@@ -68,9 +68,9 @@ const updatePlan = async (req: Request, res: Response, next: NextFunction) => {
 	 */
 
 	const updateUserPlan = await createUserPlan({
-		user_id: userId,
-		tier_type: tierType,
-		payment_id: paymentId,
+		userId: userId,
+		tierType: tierType,
+		paymentId: paymentId,
 	});
 
 	if (updateUserPlan.type === "success") {

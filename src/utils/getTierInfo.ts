@@ -1,4 +1,4 @@
-import * as tiers from "./tiers.json";
+import tiers from "./tiers";
 
 interface ITierDetails {
 	type: string;
