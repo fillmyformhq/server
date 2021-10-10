@@ -25,7 +25,7 @@ const ipRequestLimiter = (
 				uniqueCode: "IP_NOT_FOUND",
 				functionName: null,
 				message: "IP not found",
-				data: null,
+				data: { type: "error" },
 			};
 			const response: IResponse = responseHandler(responseObject);
 			return res.status(response.status).json(response);
@@ -39,7 +39,7 @@ const ipRequestLimiter = (
 					statusCode: "INTERNAL_SERVER_ERROR",
 					functionName: null,
 					message: null,
-					data: null,
+					data: { type: "error" },
 					uniqueCode: "redis_incr_error",
 				};
 				const errorObject: IResponse = responseHandler(responseObject);
@@ -52,7 +52,7 @@ const ipRequestLimiter = (
 					statusCode: "INTERNAL_SERVER_ERROR",
 					functionName: null,
 					message: null,
-					data: null,
+					data: { type: "error" },
 					uniqueCode: "redis_incr_error",
 				};
 				const errorObject: IResponse = responseHandler(responseObject);
@@ -68,7 +68,7 @@ const ipRequestLimiter = (
 					statusCode: "SERVICE_UNAVAILABLE",
 					functionName: null,
 					message: "Too many requests",
-					data: null,
+					data: { type: "error" },
 					uniqueCode: "IP_REQUESTS_EXCEEDED",
 				};
 				const errorObject: IResponse = responseHandler(responseObject);

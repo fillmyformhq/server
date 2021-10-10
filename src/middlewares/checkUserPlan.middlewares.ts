@@ -15,7 +15,7 @@ const checkUserPlan = (user_id: string | null) => {
 
 		if (!userId) {
 			const errorObj: IResponseInputParams = {
-				data: null,
+				data: { type: "error" },
 				functionName: "checkUserPlan",
 				message: null,
 				statusCode: "UNAUTHORIZED",
@@ -66,7 +66,7 @@ const checkUserPlan = (user_id: string | null) => {
 				});
 				return res.status(errorObject.status).json({ response: errorObject });
 			} else {
-				finalUserPlan = newUserPlan.data;
+				finalUserPlan = renameObjectKeys([newUserPlan.data])[0];
 			}
 		}
 

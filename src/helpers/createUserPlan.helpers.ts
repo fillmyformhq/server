@@ -52,10 +52,10 @@ const createUserPlan = async (data: IUserPlan): Promise<IHelperResponse> => {
 	const userPlan = await insertOne("user_plans", planData);
 	if (userPlan.type === "success") {
 		const updatedUser = await updateUserPlanDate(data.userId, data.tierType);
-		return updatedUser;
-	} else {
-		return userPlan;
+		if (updatedUser.type === "error") return updatedUser;
 	}
+
+	return userPlan;
 };
 
 export default createUserPlan;
