@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import find from "../../helpers/find.helpers";
+import find from "../../helpers/findMany.helpers";
 import insertOne from "../../helpers/insertOne.helpers";
 import { IResponse } from "../../types/IResponse";
 import createNanoId from "../../utils/createNanoId";
@@ -53,7 +53,7 @@ const saveResponse = async (
 	}
 };
 
-const listResponses = async (
+const listAllResponses = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
@@ -175,4 +175,4 @@ const getResponse = async (req: Request, res: Response, next: NextFunction) => {
 	}
 };
 
-export { saveResponse, listResponses, getResponse };
+export { saveResponse, listAllResponses, getResponse };

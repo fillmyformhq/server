@@ -1,21 +1,104 @@
 import { Request, Response, NextFunction } from "express";
-import find from "../../helpers/find.helpers";
+import createUserPlan from "../../helpers/createUserPlan.helpers";
+import findOne from "../../helpers/findOne.helpers";
 import insertOne from "../../helpers/insertOne.helpers";
+import { IHelperResponse } from "../../types/IHelperResponse";
 import { IResponse } from "../../types/IResponse";
 import createNanoId from "../../utils/createNanoId";
+import renameObjectKeys from "../../utils/objectKeysRenamer";
 import responseHandler from "../../utils/responseHandler";
 import signJwt from "../../utils/signJwt";
 
-const loginUser = async (req: Request, res: Response, next: NextFunction) => {
-	let { fullName, email, planType } = req.body;
-	const userId: string = await createNanoId();
+const createNewUser = async (
+	req: Request,
+	res: Response,
+	data: { fullName: string; email: string }
+) => {
+	/**
+	 * Create a row in users table
+	 * Create a row in user_plans table
+	 * Create a row in user_settings table
+	 */
 
-	if (!fullName || !email || !planType) {
+	const userToSave = {
+		id: await createNanoId(),
+		full_name: data.fullName,
+		email: data.email,
+	};
+
+	const saveUser = await insertOne("users", userToSave);
+	if (saveUser.type === "error") {
+		const errorObject = responseHandler({
+			statusCode: "INTERNAL_SERVER_ERROR",
+			data: { type: "error" },
+			functionName: "loginUser",
+			message: null,
+			uniqueCode: "insert_new_user_server_error",
+		});
+		return res.status(errorObject.status).json({ response: errorObject });
+	} else {
+		const userId: string = saveUser.data.id;
+
+		const newUserPlan = await createUserPlan({
+			userId: userId,
+			tierType: "free",
+			paymentId: null,
+		});
+
+		if (newUserPlan.type === "error") {
+			const errorObject = responseHandler({
+				statusCode: "INTERNAL_SERVER_ERROR",
+				data: { type: "error" },
+				functionName: "loginUser",
+				message: null,
+				uniqueCode: "create_new_user_plan_server_error",
+			});
+			return res.status(errorObject.status).json({ response: errorObject });
+		}
+
+		const userSettings = {
+			id: await createNanoId(),
+			user_id: userId,
+		};
+
+		const saveUserSettings = await insertOne("user_settings", userSettings);
+		if (saveUserSettings.type === "error") {
+			const errorObject = responseHandler({
+				statusCode: "INTERNAL_SERVER_ERROR",
+				data: { type: "error" },
+				functionName: "loginUser",
+				message: null,
+				uniqueCode: "insert_new_user_settings_server_error",
+			});
+			return res.status(errorObject.status).json({ response: errorObject });
+		}
+
+		const jwtToken: string = signJwt(userId);
+		const messageObject = responseHandler({
+			statusCode: "CREATED",
+			data: { type: "success", token: jwtToken, new: true },
+			functionName: "loginUser",
+			message: null,
+			uniqueCode: "user_saved_logged_in",
+		});
+		return res.status(messageObject.status).json({ response: messageObject });
+	}
+};
+
+const loginUser = async (req: Request, res: Response, next: NextFunction) => {
+	/**
+	 * Check if user exists
+	 * Call the function to createNewUser
+	 */
+
+	let { fullName, email } = req.body;
+
+	if (!fullName || !email) {
 		const errorObject: IResponse = responseHandler({
 			statusCode: "UNPROCESSABLE",
 			data: { type: "error" },
 			functionName: "loginUser",
-			message: "One of email, fullName, planType not present",
+			message: "One of email, fullName not present",
 			uniqueCode: "login_user_data_not_valid",
 		});
 		return res.status(errorObject.status).json({ response: errorObject });
@@ -36,74 +119,23 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
 		return res.status(errorObject.status).json({ response: errorObject });
 	}
 
-	if (planType !== 1 && planType !== 2) {
-		const errorObject: IResponse = responseHandler({
-			statusCode: "UNPROCESSABLE",
-			data: { type: "error" },
-			functionName: "loginUser",
-			message: "planType not equal to 1 or 2",
-			uniqueCode: "invalid_plan_type",
-		});
-		return res.status(errorObject.status).json({ response: errorObject });
-	}
-
-	const userToSave = {
-		email,
-		id: userId,
-		full_name: fullName,
-		plan: planType,
-	};
-
-	const findSavedUser: { type: string; data?: any } = await find("users", {
+	const findSavedUser: IHelperResponse = await findOne("users", {
 		email: email,
 	});
 	if (findSavedUser.type === "success") {
-		if (findSavedUser.data.length === 0) {
-			const saveUser = await insertOne("users", userToSave);
-			if (saveUser.type === "error") {
-				const errorObject = responseHandler({
-					statusCode: "INTERNAL_SERVER_ERROR",
-					data: { type: "error" },
-					functionName: "loginUser",
-					message: null,
-					uniqueCode: "insert_new_user_server_error",
-				});
-				return res.status(errorObject.status).json({ response: errorObject });
-			} else {
-				const userId: string = saveUser.data.id;
-				const jwtToken: string = signJwt(userId);
-				const messageObject = responseHandler({
-					statusCode: "CREATED",
-					data: { type: "success", token: jwtToken },
-					functionName: "loginUser",
-					message: null,
-					uniqueCode: "user_saved_logged_in",
-				});
-				return res
-					.status(messageObject.status)
-					.json({ response: messageObject });
-			}
-		} else if (findSavedUser.data.length === 1) {
-			const userId: string = findSavedUser.data[0].id;
-			const jwtToken: string = signJwt(userId);
-			const messageObject = responseHandler({
-				statusCode: "SUCCESS",
-				data: { type: "success", token: jwtToken },
-				functionName: "loginUser",
-				message: null,
-				uniqueCode: "user_found_logged_in",
-			});
-			return res.status(messageObject.status).json({ response: messageObject });
-		} else {
-			const errorObject = responseHandler({
-				statusCode: "INTERNAL_SERVER_ERROR",
-				data: { type: "error" },
-				functionName: "loginUser",
-				message: null,
-				uniqueCode: "find_saved_user_server_error",
-			});
-			return res.status(errorObject.status).json({ response: errorObject });
-		}
+		if (findSavedUser.uniqueCode === "no_item")
+			return await createNewUser(req, res, { fullName, email });
+
+		const userId: string = findSavedUser.data.id;
+		const jwtToken: string = signJwt(userId);
+		const messageObject = responseHandler({
+			statusCode: "SUCCESS",
+			data: { type: "success", token: jwtToken },
+			functionName: "loginUser",
+			message: null,
+			uniqueCode: "user_found_logged_in",
+		});
+		return res.status(messageObject.status).json({ response: messageObject });
 	} else {
 		const errorObject = responseHandler({
 			statusCode: "INTERNAL_SERVER_ERROR",
@@ -117,22 +149,11 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 const getUser = async (req: Request, res: Response, next: NextFunction) => {
-	if (!res.locals.user) {
-		const errorResponse: IResponse = responseHandler({
-			statusCode: "UNAUTHORIZED",
-			data: { type: "error" },
-			functionName: "listApps",
-			message: "Not authorized!",
-			uniqueCode: "err_not_authorized",
-		});
-		return res.status(errorResponse.status).json({ response: errorResponse });
-	}
-
 	const user = res.locals.user;
 
 	const messageResponse: IResponse = responseHandler({
 		statusCode: "SUCCESS",
-		data: { type: "success", data: user },
+		data: { type: "success", data: renameObjectKeys([user])[0] },
 		functionName: "getUser",
 		message: null,
 		uniqueCode: "user_authorized",

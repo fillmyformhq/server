@@ -1,17 +1,3 @@
-CREATE TABLE tiers(
-    id VARCHAR UNIQUE NOT NULL PRIMARY KEY,
-    name TEXT NOT NULL,
-    responses_per_hour SMALLINT NOT NULL,
-    responses_per_month SMALLINT NOT NULL,
-    price SMALLINT NOT NULL,
-    is_csv_allowed BOOLEAN NOT NULL,
-    is_email_allowed BOOLEAN NOT NULL,
-    is_deleted BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
-
 CREATE TABLE users(
     id VARCHAR NOT NULL UNIQUE PRIMARY KEY,
     email VARCHAR NOT NULL UNIQUE,
@@ -20,13 +6,12 @@ CREATE TABLE users(
     is_deleted BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-		last_login_time TIMESTAMPTZ DEFAULT NULL
 );
 
 CREATE TABLE apps(
     id VARCHAR NOT NULL UNIQUE PRIMARY KEY,
     name TEXT NOT NULL,
-    created_by VARCHAR NOT NULL REFERENCES users(id),
+    user_id VARCHAR NOT NULL UNIQUE REFERENCES users(id),
     description TEXT NOT NULL,
     website TEXT NOT NULL,
     is_deleted BOOLEAN DEFAULT FALSE,
@@ -37,6 +22,7 @@ CREATE TABLE apps(
 CREATE TABLE payments(
     id VARCHAR UNIQUE NOT NULL PRIMARY KEY,
     response TEXT NOT NULL,
+		user_id VARCHAR NOT NULL REFERENCES users(id),
     is_payment_successful BOOLEAN NOT NULL,
     is_deleted BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -46,8 +32,8 @@ CREATE TABLE payments(
 CREATE TABLE user_plans(
     id VARCHAR NOT NULL UNIQUE PRIMARY KEY,
     user_id VARCHAR NOT NULL REFERENCES users(id),
-    tier_id VARCHAR NOT NULL REFERENCES tiers(id),
-    payment_details VARCHAR REFERENCES payments(id) DEFAULT NULL,
+    tier_id VARCHAR NOT NULL,
+    payment_id VARCHAR REFERENCES payments(id) DEFAULT NULL,
     is_deleted BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -56,9 +42,19 @@ CREATE TABLE user_plans(
 CREATE TABLE responses(
     id VARCHAR NOT NULL UNIQUE PRIMARY KEY,
     user_id VARCHAR NOT NULL REFERENCES users(id),
+    app_id VARCHAR NOT NULL REFERENCES apps(id),
     response TEXT NOT NULL,
     is_deleted BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-		ip_address VARCHAR NOT NULL
+    ip_address VARCHAR NOT NULL
+);
+
+CREATE TABLE user_settings(
+    id VARCHAR NOT NULL UNIQUE PRIMARY KEY,
+    user_id VARCHAR UNIQUE NOT NULL REFERENCES users(id),
+    allow_email_responses BOOLEAN DEFAULT FALSE,
+    is_deleted BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
